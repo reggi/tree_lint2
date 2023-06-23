@@ -1,4 +1,4 @@
-import { walkSync } from 'https://deno.land/std@0.164.0/fs/mod.ts';
+import { walkSync } from 'https://deno.land/std@0.192.0/fs/mod.ts';
 import { parseImportsSync } from '../parse_imports/mod.ts';
 import path from 'node:path'
 
