@@ -18,24 +18,24 @@ Using `walk`, the project is scanned, and TypeScript files are crudely parsed us
 
 ```json
 {
-  "tree_lint": [
-    "process_deps",
-    "parse_imports",
-    "read_project"
-  ],
-  "parse_imports": [],
+  "deep_traverse": [],
   "depth_first_search": [
     "process_deps"
   ],
+  "parse_imports": [],
   "process_deps": [
     "depth_first_search",
     "deep_traverse",
     "shared_prefix"
   ],
-  "deep_traverse": [],
-  "shared_prefix": [],
   "read_project": [
     "parse_imports"
+  ],
+  "shared_prefix": [],
+  "tree_lint": [
+    "process_deps",
+    "parse_imports",
+    "read_project"
   ]
 }
 ```
@@ -44,14 +44,14 @@ Using the dependency map, we build up what the relationships should be for this 
 
 ```json
 {
-  "project_scan": {
+  "tree_lint": {
+    "depth_first_search": {},
+    "parse_imports": {},
     "process_deps": {
       "deep_traverse": {},
       "shared_prefix": {}
     },
-    "read_project": {},
-    "depth_first_search": {},
-    "parse_imports": {}
+    "read_project": {}
   }
 }
 ```
