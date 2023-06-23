@@ -61,7 +61,7 @@ if (!flags[NO_ASSERT]) {
   if (flags[HIDE_ASSERT]) {
     try {
       runAssertion()
-    } catch (e) {
+    } catch (_e) {
       throw new Error('does not match ❌')
     }
   } else {
