@@ -15,7 +15,9 @@ This is a command-line tool. Its job is to help you organize your TypeScript pro
 ## Install
 
 ```bash
-deno install --allow-read https://deno.land/x/tree_lint/mod.ts
+> deno install --allow-read https://deno.land/x/tree_lint/mod.ts
+> tree_lint
+all good 👍 ✅
 ```
 
 ## Options

@@ -49,17 +49,22 @@ if (flags[PROJECT]) {
 if (flags[EXPECTED]) {
   console.log(JSON.stringify(sortObjectKeys(expected), null, 2))
 }
+
+const runAssertion = () => {
+  assertEquals(actual, expected)
+  if (!flags[NO_MSG]) {
+    console.log('all good 👍 ✅')
+  }
+}
+
 if (!flags[NO_ASSERT]) {
   if (flags[HIDE_ASSERT]) {
     try {
-      assertEquals(actual, expected)
+      runAssertion()
     } catch (e) {
       throw new Error('does not match ❌')
     }
   } else {
-    assertEquals(actual, expected)
+    runAssertion()
   }
-}
-if (!flags[NO_MSG]) {
-  console.log('all good 👍 ✅')
 }
