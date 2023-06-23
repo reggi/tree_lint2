@@ -47,14 +47,6 @@ class NodeInstance {
     return cycles[this.node] || [];
   }
 
-  // get circularEdges () {
-  //   const flippedChildren = this.childEdges.map(flipEdge)
-  //   const flippedParents = this.parentEdges.map(flipEdge)
-  //   return [
-  //     ...filterEdgesInEdges(this.childEdges, flippedParents),
-  //     ...filterEdgesInEdges(this.parentEdges, flippedChildren)
-  //   ]
-  // }
   get circularEscapeNodes () {
     return this.parents.filter(node => !this.circularNodes.includes(node))
   }
@@ -185,14 +177,10 @@ const findReparentEdges = (tree: Tree, nodesToReparent: NodeInstance[]) => {
       }
       return false
     })
-    // console.log({ parents })
     if (parents.length === 1) return false
     const c = findSharedPrefix(parents)
     const sharedNode = c.split('.')
-    // sharedNode.pop()
     const parent = sharedNode.pop()
-    // console.log({node: node.node, parents, parent})
-    // console.log({c, sharedNode, parents})
     if (!parent) throw new Error('issue popping')
     const result: Edge = [parent, node.node]
     return result
@@ -222,23 +210,6 @@ export const runEdges = (edges: Edge[]) => {
   const removeEdgesThatPointToRoot = (e: Edge) => !rootNodes.includes(e[1])
   const removeEdgesWhereParentAndChildAreCircular = (e: Edge) => !(circularNodes.includes(e[0]) && circularNodes.includes(e[1]))
 
-  // console.log({ 
-  //   circularBinaryExtraEdges,
-  //   rootNodes,
-  //   circularNodes,
-  //   withutCircular: edges.filter(removeEdgesParentCircular),
-  //   reparentNodes: reparentNodes.map(toNode),
-  // })
-
-  // console.log('////// => 1')
-  // console.log({ 'a1': nodesCache['a'].circularNodes })
-  // console.log({ 'b1': nodesCache['b'].circularNodes })
-  // console.log({ 'c1': nodesCache['c'].circularNodes })
-  // console.log('////// => 2')
-  // console.log({ 'a2': nodesCache['a'].siblingEscapeNodes })
-  // console.log({ 'b2': nodesCache['b'].siblingEscapeNodes })
-  // console.log({ 'c2': nodesCache['c'].siblingEscapeNodes })
-
   const treeEdges: Edge[] = [
     ...edges
       .filter(removeEdgesThatPointToRoot)
@@ -256,9 +227,3 @@ export const runEdges = (edges: Edge[]) => {
 export const runDeps = (data: Data) => {
   return runEdges(getEdges(data))
 }
-
-// const project = readProject('./src')
-// console.log(project['project_scan'])
-// const edges = getEdges(project)
-// const results = runEdges(edges)
-// console.log(project)

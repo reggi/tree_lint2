@@ -14,11 +14,6 @@ function unique<T>(arr: T[]): T[] {
   return Array.from(new Set(arr));
 }
 
-function rmFirst<T>(arr: T[]): T[] {
-  if (arr.length === 0) return arr
-  return arr.slice(1)
-}
-
 type ParseImports = (filePath: string) => string[]
 
 function walkDirectoryForTypeScriptFiles(directory: string) {
@@ -56,7 +51,6 @@ function createObject(input: string[][]): TreeNode {
       if (!(part in node)) {
         node[part] = {};
       }
-
       node = node[part];
     }
   }
@@ -67,13 +61,8 @@ function createObject(input: string[][]): TreeNode {
 const pathRemoveRoot = (filePath: string, dir: string): string => { 
   const normalizedPath = filePath.split(path.sep)
   const dirIndex = normalizedPath.indexOf(dir)
-  if (dirIndex > -1) return normalizedPath.slice(dirIndex + 1).join(path.sep)
+  if (dirIndex > -1) return normalizedPath.slice(dirIndex).join(path.sep)
   return filePath;
-}
-
-function readDirectory(directory: string) {
-  const paths = walkDirectoryForTypeScriptFiles(directory)
-  return paths.map(v => path.dirname(v))
 }
 
 /** given a list of paths returns all  */
@@ -108,11 +97,13 @@ export function sortObjectKeys(obj: Sortable): Sortable {
   }, {});
 }
 
-// .map(pathRemoveRoot)
 export function directoryObject(directory: string) {
-  const basename = path.basename(directory)
-  const paths = readDirectory(directory).map(p => pathRemoveRoot(p, basename))
-  const dirs = paths.map(v => v.split(path.sep))
+  const filePaths = walkDirectoryForTypeScriptFiles(directory)
+  const paths = unique(filePaths
+    .map(filePath => path.dirname(filePath))
+  ).map(v => v.split(path.sep))
+  const shortest = paths.map(v => v.length).sort()[0]
+  const dirs = paths.map(v => v.slice(shortest-1))
   const dupes = findDuplicateDirs(dirs)
   const object = createObject(dirs)
   if (dupes.length) throw new Error('Duplicate directories found: ' + dupes.join(', '))
@@ -122,4 +113,4 @@ export function directoryObject(directory: string) {
 export function readProject(directory: string, parseImports: ParseImports = parseImportsSync): Record<string, string[]> {
   const files = walkDirectoryForTypeScriptFiles(directory)
   return createTreeFromFiles(files, parseImports)
-} 
+}

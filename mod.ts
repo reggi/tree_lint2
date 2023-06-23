@@ -30,6 +30,7 @@ const flags = parse(Deno.args, {
 const denoCwd = Deno.cwd()
 const _cwd = flags._[0] || denoCwd
 const cwd = (_cwd && path.isAbsolute(_cwd)) ? _cwd : path.join(denoCwd, _cwd)
+
 const withTypes = !flags[NO_TYPE_IMPORT]
 const parseAbsolutePaths = !flags[NO_ABS_PATH]
 const parseWithTypes = (v: string) => parseImportsSync(v, parseAbsolutePaths)

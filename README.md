@@ -12,6 +12,25 @@ This is a command-line tool. Its job is to help you organize your TypeScript pro
 
 > Note: nothing is written to disk. All that is used is the read permission `--allow-read`.
 
+## Install
+
+```bash
+deno install --allow-read https://deno.land/x/tree_lint/mod.ts
+```
+
+## Options
+
+| Flags            | Description                                                                |
+|------------------|----------------------------------------------------------------------------|
+| --no-type-import | When enabled imports with `import type` will not be added to the mapping.  |
+| --no-abs-path    | When enabled imports will not be converted to absolute paths.              |
+| --project        | When enabled will print out the project relationship object.               |
+| --actual         | When enabled will print out the current directory structure.               |
+| --expected       | When enabled will print out the expected directory structure.              |
+| --no-assert      | When enabled will not assert.                                              |
+| --hide-assert    | When enabled will not print assertion diff.                                |
+| --no-msg         | When enabled will not print out success message.                           |
+
 ## How it works
 
 Using `walk`, the project is scanned, and TypeScript files are crudely parsed using a string match for imports (nothing fancy). Each TypeScript file in the project is read and builds up a local dependency map. Here's this project's initial dependency scan:
