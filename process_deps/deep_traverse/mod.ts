@@ -9,7 +9,7 @@ type V = {
   currentObjHandler: (cb: (o: any) => void) => void
 }
 
-export function deepTraverse2(obj: DeepObject, callback: (v: V) => boolean, until: Set<any> = new Set()): DeepObject {
+export function deepTraverse(obj: DeepObject, callback: (v: V) => boolean, until: Set<any> = new Set()): DeepObject {
   let done = false
   const traverse = (currentObj: DeepObject, depth = 0, parentKey = "$"): void => {
     if (done) return;
@@ -41,19 +41,3 @@ export function deepTraverse2(obj: DeepObject, callback: (v: V) => boolean, unti
   traverse(obj);
   return obj;
 }
-
-// deepDelete2({
-//   a: {
-//     b: {
-//       c: {}
-//     }
-//   },
-//   q: {
-//     b: {
-//       c: {}
-//     }
-//   }
-// }, (depth, key, value, parent) => {
-//   console.log({ parent })
-//   return false
-// })

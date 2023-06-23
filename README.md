@@ -35,7 +35,7 @@ all good 👍 ✅
 
 ## How it works
 
-Using `walk`, the project is scanned, and TypeScript files are crudely parsed using a string match for imports (nothing fancy). Each TypeScript file in the project is read and builds up a local dependency map. Here's this project's initial dependency scan:
+Using `walk`, the project is scanned, and TypeScript files are crudely parsed using a string match for imports (nothing fancy). Each TypeScript file in the project is read and builds up a local dependency map. Here's this project's initial dependency scan (`tree_lint --no-assert --project`):
 
 ```json
 {
@@ -43,10 +43,14 @@ Using `walk`, the project is scanned, and TypeScript files are crudely parsed us
   "depth_first_search": [
     "process_deps"
   ],
+  "node_instance": [
+    "depth_first_search",
+    "process_deps"
+  ],
   "parse_imports": [],
   "process_deps": [
-    "depth_first_search",
     "deep_traverse",
+    "node_instance",
     "shared_prefix"
   ],
   "read_project": [
@@ -61,12 +65,13 @@ Using `walk`, the project is scanned, and TypeScript files are crudely parsed us
 }
 ```
 
-Using the dependency map, we build up what the relationships should be for this project.
+Using the dependency map, we build up what the relationships should be for this project (`tree_lint --no-assert --expected`)
 
 ```json
 {
   "tree_lint": {
     "depth_first_search": {},
+    "node_instance": {},
     "parse_imports": {},
     "process_deps": {
       "deep_traverse": {},
