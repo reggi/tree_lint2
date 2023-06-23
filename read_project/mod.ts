@@ -57,14 +57,6 @@ function createObject(input: string[][]): TreeNode {
   return root;
 }
 
-// return rmFirst(p.split(path.sep)).join(path.sep)
-const pathRemoveRoot = (filePath: string, dir: string): string => { 
-  const normalizedPath = filePath.split(path.sep)
-  const dirIndex = normalizedPath.indexOf(dir)
-  if (dirIndex > -1) return normalizedPath.slice(dirIndex).join(path.sep)
-  return filePath;
-}
-
 /** given a list of paths returns all  */
 const findDuplicateDirs = (dirs: string[][]) => {
   const dirMap: Record<string, number[]> = {}
