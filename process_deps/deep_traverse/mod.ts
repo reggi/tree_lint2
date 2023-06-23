@@ -1,15 +1,16 @@
 
-type DeepObject = Record<string, any>;
+type EmptyObject = Record<string | number | symbol, never>;
+type DeepObject = {[key: string]: DeepObject | EmptyObject };
 
 type V = {
   depth: number,
   key: string,
-  value: any,
+  value: DeepObject,
   parentKey: string,
-  currentObjHandler: (cb: (o: any) => void) => void
+  currentObjHandler: (cb: (o: DeepObject) => void) => void
 }
 
-export function deepTraverse(obj: DeepObject, callback: (v: V) => boolean, until: Set<any> = new Set()): DeepObject {
+export function deepTraverse(obj: DeepObject, callback: (v: V) => boolean, until: Set<DeepObject> = new Set()): DeepObject {
   let done = false
   const traverse = (currentObj: DeepObject, depth = 0, parentKey = "$"): void => {
     if (done) return;
