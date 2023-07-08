@@ -1,28 +1,29 @@
 import path from 'node:path'
 
-export const parseImportsSync = (filePath: string, passFilePath = true) => {
-  const fileContent = Deno.readTextFileSync(filePath)
-  return parseImportsFromString(fileContent, passFilePath ? filePath : undefined)
+export type ParseFunctionSignature = (fileContent: string, filePath?: string) => string[]
+
+export const parseImportsFunction = (withTypes = true): ParseFunctionSignature => {
+  return (fileContent: string, filePath?: string) => {
+    return parseImports(fileContent, withTypes, filePath);
+  }
 }
 
-export const parseImportsWithoutTypeSync = (filePath: string, passFilePath = true) => {
-  const fileContent = Deno.readTextFileSync(filePath)
-  return parseImportTypesFromString(fileContent, passFilePath ? filePath : undefined).regularImports
+export const parseImports = (fileContent: string, withTypes = true, filePath?: string) => {
+  const { typeImports, regularImports } = parseImportTypes(fileContent, filePath);
+  return withTypes ? [...typeImports, ...regularImports] : regularImports;
 }
 
-export const parseImportsFromString = (fileContent: string, filePath?: string) => {
-  const { typeImports, regularImports } = parseImportTypesFromString(fileContent, filePath)
-  return [...typeImports, ...regularImports]
-}
-
-export const parseImportTypesFromString = (fileContent: string, filePath?: string) => {
+export const parseImportTypes = (fileContent: string, filePath?: string) => {
   const lines = fileContent.split('\n');
   const regularImports: string[] = [];
   const typeImports: string[] = [];
   lines.forEach((line) => {
     const trimmedLine = line.trimStart();
     if (trimmedLine.startsWith('import')) {
-      const match = line.match(/from ['"]((?:\.\.\/|\.\/).*?)['"]/);
+      let match = line.match(/from ['"]((?:\.\.\/|\.\/).*?)['"]/);
+      if (!match) {
+        match = line.match(/import\s+['"]((?:\.\.\/|\.\/).*?)['"]/);
+      }
       if (match) {
         const importPath = match[1];
         const absolutePath = filePath ? path.resolve(path.dirname(filePath), importPath) : importPath;

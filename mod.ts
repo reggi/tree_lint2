@@ -1,70 +1,32 @@
-import { parse } from "https://deno.land/std@0.192.0/flags/mod.ts";
-import { assertEquals } from "https://deno.land/std@0.192.0/testing/asserts.ts";
-import { runDeps } from "./process_deps/mod.ts";
-import { parseImportsSync, parseImportsWithoutTypeSync } from "./parse_imports/mod.ts";
-import { directoryObject, readProject, sortObjectKeys } from "./read_project/mod.ts";
-import path from 'node:path'
+import { absolutePath } from "./abs_path/mod.ts"
+import { Tree, TreeOptions } from "./tree/mod.ts"
+import { depsToEdges } from "./deps_to_edges/mod.ts"
+import { Graph, GraphOptions } from "./graph/mod.ts"
+import { ParseFilesOptions, parseFilesSync } from "./parse_files/mod.ts"
+import { treeToProject } from "./tree_to_project/mod.ts"
+import { walkDir } from "./walk_dir/mod.ts"
 
-const NO_TYPE_IMPORT = 'no-type-import'
-const NO_ABS_PATH = 'no-abs-path'
-const PROJECT = 'project'
-const ACTUAL = 'actual'
-const EXPECTED = 'expected'
-const NO_ASSERT = 'no-assert'
-const HIDE_ASSERT = 'hide-assert'
-const NO_MSG = 'no-msg'
-const flags = parse(Deno.args, { 
-  string: ['_'],
-  boolean: [
-    NO_TYPE_IMPORT,
-    NO_ABS_PATH,
-    PROJECT,
-    ACTUAL,
-    EXPECTED,
-    NO_ASSERT,
-    NO_MSG,
-    HIDE_ASSERT
-  ]
+type Options = GraphOptions & TreeOptions & ParseFilesOptions & {
+  extensions?: string[]
+}
+
+const main = (filePath: string, options?: Options) => {
+  filePath = absolutePath(filePath)
+  const files = walkDir(filePath, options?.extensions || ['.ts', '.tsx', '.js', '.jsx', '.json'])
+  const deps = parseFilesSync(files)
+  const keyNodes = Object.keys(deps)
+  const edges = depsToEdges(deps)
+  const graph = Graph.build(edges, keyNodes, options)
+  const results = Tree.build(graph.edges, options)
+  const project = treeToProject(results, options)
+  // console.dir(JSON.stringify(project, null, 2), { depth: null })
+  console.dir(project, { depth: null })
+}
+
+main('./', {
+  extensions: ['.ts', '.js'],
+  flipRelationFiles: ['^test\.(ts|tsx)$'],
+  useDynamicRoots: true,
+  keepFiles: ['^mod\.(ts|tsx)$', '^test\.(ts|tsx)$', '^types\.(ts|tsx)$'],
+  indexName: 'mod',
 })
-
-const denoCwd = Deno.cwd()
-const _cwd = flags._[0] || denoCwd
-const cwd = (_cwd && path.isAbsolute(_cwd)) ? _cwd : path.join(denoCwd, _cwd)
-
-const withTypes = !flags[NO_TYPE_IMPORT]
-const parseAbsolutePaths = !flags[NO_ABS_PATH]
-const parseWithTypes = (v: string) => parseImportsSync(v, parseAbsolutePaths)
-const parseWithoutTypes = (v: string) => parseImportsWithoutTypeSync(v, parseAbsolutePaths)
-const parseImports = withTypes ? parseWithTypes : parseWithoutTypes
-const actual = directoryObject(cwd)
-const project = readProject(cwd, parseImports)
-const expected = runDeps(project)
-
-if (flags[ACTUAL]) {
-  console.log(JSON.stringify(sortObjectKeys(actual), null, 2))
-}
-if (flags[PROJECT]) {
-  console.log(JSON.stringify(sortObjectKeys(project), null, 2))
-}
-if (flags[EXPECTED]) {
-  console.log(JSON.stringify(sortObjectKeys(expected), null, 2))
-}
-
-const runAssertion = () => {
-  assertEquals(actual, expected)
-  if (!flags[NO_MSG]) {
-    console.log('all good 👍 ✅')
-  }
-}
-
-if (!flags[NO_ASSERT]) {
-  if (flags[HIDE_ASSERT]) {
-    try {
-      runAssertion()
-    } catch (_e) {
-      throw new Error('does not match ❌')
-    }
-  } else {
-    runAssertion()
-  }
-}
