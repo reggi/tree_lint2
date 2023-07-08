@@ -24,6 +24,6 @@ jobs:
       - name: Lint Deno Module
         run: deno lint
       - name: Test Deno Module
-        run: deno test
+        run: deno task test
       - name: Build Deno Module
         run: deno run --allow-read --reload mod.ts
