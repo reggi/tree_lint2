@@ -1,5 +1,5 @@
 import { assertEquals } from "https://deno.land/std@0.192.0/testing/asserts.ts";
-import { Edge, Edges } from "./edge/mod.ts";
+import { Edge } from "./edge/mod.ts";
 import { Graph } from "./mod.ts";
 
 Deno.test("Graph - addEdge", () => {
