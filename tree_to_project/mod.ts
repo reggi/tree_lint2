@@ -13,7 +13,7 @@ const removeKey = (obj: any, key: string) => {
 }
 
 // deno-lint-ignore no-explicit-any
-const nugget = (value: any, dirname: string, fileName: string) => {
+const nuggetWithDirname = (value: any, dirname: string, fileName: string) => {
   const valueDir = value[dirname] || {}
   if (valueDir) {
     const v = removeKey(value, dirname)
@@ -22,10 +22,16 @@ const nugget = (value: any, dirname: string, fileName: string) => {
   return {[dirname]: { ...value, [fileName]: {} }}
 }
 
+// deno-lint-ignore no-explicit-any
+const nuggetWithoutDirname = (value: any, fileName: string) => {
+  return { ...value, [fileName]: {} }
+}
+
 export const treeToProject = (tree: Record<string, unknown>, opts?: ProjectNameOptions) => {
   return deepMap(tree, (key, value) => {
     if (typeof key === 'symbol') return {[key]: value}
     const i = projectName(key, opts)
-    return nugget(value, i.dir, i.file)
+    if (!i.dir) return nuggetWithoutDirname(value, i.file)
+    return nuggetWithDirname(value, i.dir, i.file)
   });
 }

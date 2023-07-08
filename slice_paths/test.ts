@@ -1,12 +1,5 @@
 import { assertEquals } from "https://deno.land/std@0.192.0/testing/asserts.ts";
-import {
-  getSharedPath,
-  getSharedPathIndex,
-  slicePaths,
-  slicePath,
-  slicePathsAtSharedIndex,
-  slicePathsAtSharedIndexMap,
-} from "./mod.ts";
+import { getSharedPath, getSharedPathIndex, slicePaths, slicePath, slicePathsAtSharedIndex, slicePathsAtSharedIndexMap } from "./mod.ts";
 
 Deno.test("getSharedPath", () => {
   const filePaths = [

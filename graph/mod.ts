@@ -1,10 +1,4 @@
-import {
-  Matches,
-  ExcludeMatches,
-  PromoteMatches,
-  extractExcludeMatches,
-  extractPromoteMatches
-} from "../matches/mod.ts"
+import { Matches, ExcludeMatches, PromoteMatches, extractExcludeMatches, extractPromoteMatches } from "../matches/mod.ts"
 import { ProjectNameOptions, projectName } from "../project_name/mod.ts"
 import { Edge, Edges } from "./edge/mod.ts"
 import { Node, Nodes } from "./node/mod.ts"
